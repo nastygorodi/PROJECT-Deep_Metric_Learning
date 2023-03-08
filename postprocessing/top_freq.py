@@ -22,7 +22,7 @@ class MultiQueryPostprocessor(IDistancesPostprocessor, ABC):
     top_n: int
     verbose: bool = False
 
-    def process(self, distances: Tensor, queries: Any, galleries: Any, q_labels: Any, g_labels: Any) -> Tensor:
+    def process(self, distances: Tensor, queries: Any, galleries: Any, q_labels: Any) -> Tensor:
         
         n_queries = len(queries)
         n_galleries = len(galleries)
@@ -34,7 +34,7 @@ class MultiQueryPostprocessor(IDistancesPostprocessor, ABC):
 
         if self.verbose:
             print("\nPostprocessor's inference has been started...")
-        new_ii_top = self.inference(q_labels=q_labels, g_labels=g_labels, ii_top=ii_top, top_n=top_n)
+        new_ii_top = self.inference(q_labels=q_labels, ii_top=ii_top, top_n=top_n)
         new_ii_top = new_ii_top.to(ii_top.device).to(ii_top.dtype)
         distances_upd = torch.arange(1, top_n + 1).view(1, -1).repeat_interleave(new_ii_top.shape[0], dim=0)
         distances_upd = distances_upd.to(distances.device).to(distances.dtype)
@@ -51,7 +51,7 @@ class MultiQueryPostprocessor(IDistancesPostprocessor, ABC):
 
         return distances
 
-    def inference(self, q_labels: Any, g_labels: Any, ii_top: Tensor, top_n: int) -> Tensor:
+    def inference(self, q_labels: Any, ii_top: Tensor, top_n: int) -> Tensor:
         raise NotImplementedError()
 
 
@@ -81,7 +81,7 @@ class TopFrequencyPostprocessor(MultiQueryPostprocessor):
         self.embeddings_key = embeddings_key
         self.label_key = label_key
 
-    def inference(self, q_labels: Tensor, g_labels: Tensor, ii_top: Tensor, top_n: int) -> Tensor:
+    def inference(self, q_labels: Tensor, ii_top: Tensor, top_n: int) -> Tensor:
         indexes_ = torch.arange(q_labels.shape[0])
         add_multi = 2
         def multi_query(ind):
@@ -108,8 +108,7 @@ class TopFrequencyPostprocessor(MultiQueryPostprocessor):
         queries = data[self.embeddings_key][data[self.is_query_key]]
         galleries = data[self.embeddings_key][data[self.is_gallery_key]]
         q_labels = data[self.label_key][data[self.is_query_key]]
-        g_labels = data[self.label_key][data[self.is_gallery_key]]
-        return self.process(distances=distances, queries=queries, galleries=galleries, q_labels=q_labels, g_labels=g_labels)
+        return self.process(distances=distances, queries=queries, galleries=galleries, q_labels=q_labels)
 
     @property
     def needed_keys(self) -> List[str]:
