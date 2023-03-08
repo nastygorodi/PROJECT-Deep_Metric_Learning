@@ -1,10 +1,10 @@
 accelerator: gpu
 devices: 1
 
-dataset_root: /mnt/c/Users/hutao/Desktop/open-metric-learning/data/CARS196
+dataset_root: /mnt/c/Users/hutao/Desktop/dml/CARS196
 dataframe_name: df.csv
 
-logs_root: /mnt/c/Users/hutao/Desktop/open-metric-learning/logs/CARS196/
+logs_root: /mnt/c/Users/hutao/Desktop/dml/logs/CARS196/
 
 bs_val: 256
 num_workers: 8
