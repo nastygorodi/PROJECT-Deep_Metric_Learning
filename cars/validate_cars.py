@@ -4,9 +4,9 @@ from omegaconf import DictConfig
 from oml.lightning.entrypoints.validate import pl_val
 
 from oml.registry.postprocessors import POSTPROCESSORS_REGISTRY
-from postprocessing.greedy import GreedyPostprocessor
+from postprocessing.top_freq import TopFrequencyPostprocessor
 
-POSTPROCESSORS_REGISTRY['greedy'] = GreedyPostprocessor
+POSTPROCESSORS_REGISTRY['top_freq'] = TopFrequencyPostprocessor
 
 
 @hydra.main(config_path="configs", config_name="val_cars.yaml")

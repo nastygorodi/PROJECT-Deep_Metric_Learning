@@ -23,7 +23,7 @@ model:
     weights: vits16_cars
 
 postprocessor:
-  name: greedy
+  name: top_freq
   args:
     top_n: 5
     num_workers: 4

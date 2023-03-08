@@ -55,7 +55,7 @@ class MultiQueryPostprocessor(IDistancesPostprocessor, ABC):
         raise NotImplementedError()
 
 
-class GreedyPostprocessor(MultiQueryPostprocessor):
+class TopFrequencyPostprocessor(MultiQueryPostprocessor):
     def __init__(
         self,
         top_n: int,
@@ -115,4 +115,4 @@ class GreedyPostprocessor(MultiQueryPostprocessor):
     def needed_keys(self) -> List[str]:
         return [self.is_query_key, self.is_gallery_key, self.embeddings_key]
 
-__all__ = ["GreedyPostprocessor"]
+__all__ = ["TopFrequencyPostprocessor"]
