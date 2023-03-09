@@ -1,27 +1,41 @@
-import itertools
 from abc import ABC
-from pathlib import Path
 from typing import Any, Dict, List
 
-import numpy as np
 import torch
 from torch import Tensor
 
-from oml.const import EMBEDDINGS_KEY, IS_GALLERY_KEY, IS_QUERY_KEY, PATHS_KEY, LABELS_KEY
-from oml.inference.pairs import (
-    pairwise_inference_on_embeddings,
-    pairwise_inference_on_images,
-)
-from oml.interfaces.models import IPairwiseModel
+from oml.const import EMBEDDINGS_KEY, IS_GALLERY_KEY, IS_QUERY_KEY, LABELS_KEY
+
 from oml.interfaces.retrieval import IDistancesPostprocessor
-from oml.transforms.images.utils import TTransforms
 from oml.utils.misc_torch import assign_2d
 
 
-class MultiQueryPostprocessor(IDistancesPostprocessor, ABC):
-    top_n: int
-    verbose: bool = False
+class TopFrequencyPostprocessor(IDistancesPostprocessor, ABC):
+    def __init__(
+        self,
+        top_n: int,
+        num_workers: int,
+        batch_size: int,
+        verbose: bool = False,
+        use_fp16: bool = False,
+        label_key: str = LABELS_KEY,
+        is_query_key: str = IS_QUERY_KEY,
+        is_gallery_key: str = IS_GALLERY_KEY,
+        embeddings_key: str = EMBEDDINGS_KEY,
+    ):
+        assert top_n > 1, "Number of galleries for each query to process has to be greater than 1."
 
+        self.top_n = top_n
+        self.num_workers = num_workers
+        self.batch_size = batch_size
+        self.verbose = verbose
+        self.use_fp16 = use_fp16
+
+        self.is_query_key = is_query_key
+        self.is_gallery_key = is_gallery_key
+        self.embeddings_key = embeddings_key
+        self.label_key = label_key
+    
     def process(self, distances: Tensor, queries: Any, galleries: Any, q_labels: Any) -> Tensor:
         
         n_queries = len(queries)
@@ -51,36 +65,6 @@ class MultiQueryPostprocessor(IDistancesPostprocessor, ABC):
 
         return distances
 
-    def inference(self, q_labels: Any, ii_top: Tensor, top_n: int) -> Tensor:
-        raise NotImplementedError()
-
-
-class TopFrequencyPostprocessor(MultiQueryPostprocessor):
-    def __init__(
-        self,
-        top_n: int,
-        num_workers: int,
-        batch_size: int,
-        verbose: bool = False,
-        use_fp16: bool = False,
-        label_key: str = LABELS_KEY,
-        is_query_key: str = IS_QUERY_KEY,
-        is_gallery_key: str = IS_GALLERY_KEY,
-        embeddings_key: str = EMBEDDINGS_KEY,
-    ):
-        assert top_n > 1, "Number of galleries for each query to process has to be greater than 1."
-
-        self.top_n = top_n
-        self.num_workers = num_workers
-        self.batch_size = batch_size
-        self.verbose = verbose
-        self.use_fp16 = use_fp16
-
-        self.is_query_key = is_query_key
-        self.is_gallery_key = is_gallery_key
-        self.embeddings_key = embeddings_key
-        self.label_key = label_key
-
     def inference(self, q_labels: Tensor, ii_top: Tensor, top_n: int) -> Tensor:
         indexes_ = torch.arange(q_labels.shape[0])
         add_multi = 2
@@ -99,6 +83,7 @@ class TopFrequencyPostprocessor(MultiQueryPostprocessor):
             vals, counts = x.unique(sorted=False, return_counts=True)
             _, freq = counts.sort(descending=True)
             res = vals[freq]
+            res = res[res != q_i[0]]
             return res[:top_n].view(1, -1)
         
         multi_ii = torch.cat([top_freq(multi[i], q_inds[i]) for i in range(multi.shape[0])], dim=0)
