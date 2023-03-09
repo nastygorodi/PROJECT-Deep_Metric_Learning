@@ -48,7 +48,7 @@ class TopFrequencyPostprocessor(IDistancesPostprocessor, ABC):
 
         if self.verbose:
             print("\nPostprocessor's inference has been started...")
-        new_ii_top = self.inference(q_labels=q_labels, ii_top=ii_top, top_n=top_n)
+        new_ii_top = self.inference(q_labels=q_labels, distances=torch.clone(distances), top_n=top_n)
         new_ii_top = new_ii_top.to(ii_top.device).to(ii_top.dtype)
         distances_upd = torch.arange(1, top_n + 1).view(1, -1).repeat_interleave(new_ii_top.shape[0], dim=0)
         distances_upd = distances_upd.to(distances.device).to(distances.dtype)
@@ -65,7 +65,7 @@ class TopFrequencyPostprocessor(IDistancesPostprocessor, ABC):
 
         return distances
 
-    def inference(self, q_labels: Tensor, ii_top: Tensor, top_n: int) -> Tensor:
+    def inference(self, q_labels: Tensor, distances: Tensor, top_n: int) -> Tensor:
         indexes_ = torch.arange(q_labels.shape[0])
         add_multi = 2
         def multi_query(ind):
@@ -77,16 +77,18 @@ class TopFrequencyPostprocessor(IDistancesPostprocessor, ABC):
         
         q_inds = torch.cat([multi_query(i) for i in range(len(q_labels))], dim=0)
         
+        distances[torch.arange(0, distances.shape[0]), q_inds.T] = torch.inf
+        ii_top = torch.topk(distances, k=top_n, largest=False)[1]
+        
         multi = ii_top[q_inds].view(q_inds.shape[0], -1)
         
-        def top_freq(x, q_i):
+        def top_freq(x):
             vals, counts = x.unique(sorted=False, return_counts=True)
             _, freq = counts.sort(descending=True)
             res = vals[freq]
-            res = res[res != q_i[0]]
             return res[:top_n].view(1, -1)
         
-        multi_ii = torch.cat([top_freq(multi[i], q_inds[i]) for i in range(multi.shape[0])], dim=0)
+        multi_ii = torch.cat([top_freq(multi[i]) for i in range(multi.shape[0])], dim=0)
         return multi_ii
 
     def process_by_dict(self, distances: Tensor, data: Dict[str, Any]) -> Tensor:
