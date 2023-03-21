@@ -49,10 +49,10 @@ metric_for_checkpointing: OVERALL/cmc/1
 model:
   name: vit
   args:
-    arch: vits16
     normalise_features: False
     use_multi_scale: False
-    weights: vits16_cars
+    weights: vits16_dino
+    arch: vits16
 
 
 criterion:
