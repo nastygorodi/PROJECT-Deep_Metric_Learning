@@ -1,7 +1,7 @@
 import hydra
 from omegaconf import DictConfig
 
-from oml.lightning.entrypoints.train import pl_train
+from utils.train import pl_train
 
 
 @hydra.main(config_path="configs", config_name="train_cars.yaml")
