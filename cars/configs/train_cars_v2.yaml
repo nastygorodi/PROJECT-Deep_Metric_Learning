@@ -79,7 +79,7 @@ scheduling:
   scheduler:
     name: cosine_annealing
     args:
-      T_max: 300
+      T_max: 4000
       eta_min: 1e-6
 
 
