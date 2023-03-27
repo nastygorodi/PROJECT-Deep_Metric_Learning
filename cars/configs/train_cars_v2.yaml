@@ -62,7 +62,7 @@ criterion:
     margin: null
     reduction: mean
     miner:
-      name: hard_triplets
+      name: all_triplets
       args: {}
 
 
