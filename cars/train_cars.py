@@ -4,7 +4,7 @@ from omegaconf import DictConfig
 from utils.train import pl_train
 
 
-@hydra.main(config_path="configs", config_name="train_cars.yaml")
+@hydra.main(config_path="configs", config_name="train_cars_v2.yaml")
 def main_hydra(cfg: DictConfig) -> None:
     pl_train(cfg)
 
