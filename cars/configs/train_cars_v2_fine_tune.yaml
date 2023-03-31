@@ -69,7 +69,7 @@ criterion:
 optimizer:
   name: adamw
   args:
-    lr: 1e-6  # if you provide scheduler this parameter will be ignored
+    lr: 5e-7  # if you provide scheduler this parameter will be ignored
 
 
 # To use neptune you should also specify NEPTUNE_API_TOKEN in
