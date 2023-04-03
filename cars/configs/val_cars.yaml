@@ -1,35 +1,28 @@
 accelerator: gpu
+precision: 32
 devices: 1
 
-dataset_root: /mnt/c/Users/hutao/Desktop/dml/CARS196
+dataset_root: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/CARS196
 dataframe_name: df.csv
+logs_root: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/
 
-logs_root: /mnt/c/Users/hutao/Desktop/dml/logs/CARS196/
-
-bs_val: 256
-num_workers: 8
+bs_val: 128
+num_workers: 20
 
 transforms_val:
-  name: norm_resize_albu
+  name: norm_resize_hypvit_torch
   args:
     im_size: 224
+
+weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-03-28_02-32-42_metric_learning_cars/checkpoints/best.ckpt
 
 model:
   name: vit
   args:
     arch: vits16
-    normalise_features: False
+    normalise_features: True
     use_multi_scale: False
-    weights: vits16_cars
-
-postprocessor:
-  name: top_freq
-  args:
-    top_n: 5
-    num_workers: 4
-    batch_size: 128
-    verbose: True
-    use_fp16: True
+    weights: ${weights}
 
 metric_args:
   metrics_to_exclude_from_visualization: [cmc,]
@@ -41,7 +34,8 @@ metric_args:
   return_only_main_category: False
   visualize_only_main_category: True
 
-log_images: False
+wandb_project: DIPLOMA
+wandb_name: validate_extractor
 
 hydra:
   searchpath:
