@@ -3,7 +3,7 @@ postfix: "postprocessing"
 seed: 42
 precision: 16
 accelerator: gpu
-devices: 2
+devices: 1
 
 dataset_root: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/CARS196
 logs_root: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/
