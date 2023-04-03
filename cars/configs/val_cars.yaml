@@ -34,9 +34,6 @@ metric_args:
   return_only_main_category: False
   visualize_only_main_category: True
 
-wandb_project: DIPLOMA
-wandb_name: validate_extractor
-
 hydra:
   searchpath:
    - pkg://oml.configs
