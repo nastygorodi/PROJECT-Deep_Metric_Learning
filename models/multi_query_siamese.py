@@ -16,7 +16,7 @@ class MultiDistanceSiamese(IPairwiseModel):
         super(MultiDistanceSiamese, self).__init__()
         #self.extractor = extractor
         
-        self.feat_dim = 128
+        self.feat_dim = 224
 
         self.proj1 = torch.nn.Linear(in_features=self.feat_dim * 3, out_features=hidden_dim, bias=False)
         self.proj2 = torch.nn.Linear(in_features=self.feat_dim, out_features=hidden_dim, bias=False)
