@@ -30,7 +30,7 @@ sampler:
     n_instances: 10
 
 bs_val: 512
-max_epochs: 4000
+max_epochs: 8000
 valid_period: 10
 
 metric_args:
@@ -79,8 +79,8 @@ scheduling:
   scheduler:
     name: cosine_annealing
     args:
-      T_max: 4000
-      eta_min: 1e-6
+      T_max: 8000
+      eta_min: 5e-7
 
 
 # To use neptune you should also specify NEPTUNE_API_TOKEN in
