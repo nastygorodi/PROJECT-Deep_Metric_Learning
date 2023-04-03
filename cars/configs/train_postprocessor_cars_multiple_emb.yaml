@@ -85,10 +85,6 @@ postprocessor:
   args:
     top_n: 5
     pairwise_model: ${pairwise_model}
-    transforms:
-      name: norm_resize_hypvit_torch
-      args:
-        im_size: 224
     num_workers: ${num_workers}
     batch_size: ${batch_size_inference}
     verbose: True
