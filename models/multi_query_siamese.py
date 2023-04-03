@@ -14,7 +14,7 @@ class MultiDistanceSiamese(IPairwiseModel):
 
     def __init__(self, extractor, hidden_dim: int, weights: Optional[Union[str, Path]] = None, strict_load: bool = True):
         super(MultiDistanceSiamese, self).__init__()
-        self.extractor = extractor
+        #self.extractor = extractor
         
         self.feat_dim = 128
 
@@ -32,8 +32,8 @@ class MultiDistanceSiamese(IPairwiseModel):
             self.load_state_dict(loaded, strict=strict_load)
 
     def forward(self, x1: Tensor, x2: Tensor) -> Tensor:
-        x1 = self.proj1(self.extractor(x1))
-        x2 = self.proj2(self.extractor(x2))
+        x1 = self.proj1(x1)
+        x2 = self.proj2(x2)
         y = elementwise_dist(x1, x2, p=2)
         return y
 
