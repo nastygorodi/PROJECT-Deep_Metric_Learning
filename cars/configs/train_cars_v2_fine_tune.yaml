@@ -62,14 +62,14 @@ criterion:
     margin: null
     reduction: mean
     miner:
-      name: hard_triplets
+      name: all_triplets
       args: {}
 
 
 optimizer:
   name: adamw
   args:
-    lr: 5e-7  # if you provide scheduler this parameter will be ignored
+    lr: 1e-6
 
 
 # To use neptune you should also specify NEPTUNE_API_TOKEN in
