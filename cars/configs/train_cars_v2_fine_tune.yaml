@@ -54,7 +54,6 @@ model:
     weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-03-28_02-32-42_metric_learning_cars/checkpoints/best.ckpt
     arch: vits16
 
-
 criterion:
   name: triplet_with_miner
   args:
@@ -62,7 +61,7 @@ criterion:
     margin: null
     reduction: mean
     miner:
-      name: all_triplets
+      name: hard_triplets
       args: {}
 
 
