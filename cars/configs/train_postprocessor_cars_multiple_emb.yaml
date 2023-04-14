@@ -67,7 +67,7 @@ scheduling:
 sampler:
   name: balance
   args:
-    n_labels: 30
+    n_labels: 20
     n_instances: 7
 
 transforms_train:
