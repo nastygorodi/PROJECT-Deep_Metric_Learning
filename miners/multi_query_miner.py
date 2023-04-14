@@ -41,6 +41,8 @@ def get_available_items(n_queries: int, labels: List[int], max_out: int = maxsiz
         pos_p = list(combinations(ids_pos_cur, r=(n_queries + 1)))
         
         item = [(*p, n, 1) for p, n in product(pos_n, ids_neg_cur)]
+        
+        item = sample(item, len(pos_p))
 
         item += [(*p, 0) for p in pos_p]
 
