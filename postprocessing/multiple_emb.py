@@ -7,13 +7,13 @@ from torch import Tensor
 from oml.const import EMBEDDINGS_KEY, IS_GALLERY_KEY, IS_QUERY_KEY, LABELS_KEY
 from oml.inference.abstract import _inference
 from oml.interfaces.retrieval import IDistancesPostprocessor
-from oml.interfaces.models import IPairwiseModel
+from models.model import IMultiQueryModel
 from oml.utils.misc_torch import assign_2d
 from oml.utils.misc_torch import get_device
 from dataset.multi_query import MultiQueryEmbeddingDataset
 
 def multi_query_inference_on_embeddings(
-    model: IPairwiseModel,
+    model: IMultiQueryModel,
     embeddings_query: Tensor,
     embeddings_gallery: Tensor,
     num_workers: int,
@@ -27,12 +27,12 @@ def multi_query_inference_on_embeddings(
     dataset = MultiQueryEmbeddingDataset(embeddings1=embeddings_query, embeddings2=embeddings_gallery)
 
     def _apply(
-        model_: IPairwiseModel,
+        model_: IMultiQueryModel,
         batch_: Dict[str, Any],
     ) -> Tensor:
         pair1 = batch_[dataset.pair_1st_key].to(device)
         pair2 = batch_[dataset.pair_2nd_key].to(device)
-        return model_.predict(pair1, pair2)
+        return model_.predict(pair1, pair2, train=False)
 
     output = _inference(
         model=model,
@@ -52,7 +52,8 @@ class MultiEmbeddingsPostprocessor(IDistancesPostprocessor, ABC):
     def __init__(
         self,
         top_n: int,
-        pairwise_model: IPairwiseModel,
+        n_queries: int,
+        pairwise_model: IMultiQueryModel,
         num_workers: int,
         batch_size: int,
         verbose: bool = False,
@@ -65,6 +66,7 @@ class MultiEmbeddingsPostprocessor(IDistancesPostprocessor, ABC):
         assert top_n > 1, "Number of galleries for each query to process has to be greater than 1."
 
         self.top_n = top_n
+        self.n_queries = n_queries
         self.model = pairwise_model
         self.num_workers = num_workers
         self.batch_size = batch_size
@@ -111,7 +113,7 @@ class MultiEmbeddingsPostprocessor(IDistancesPostprocessor, ABC):
         n_queries = len(queries)
         
         indexes_ = torch.arange(q_labels.shape[0])
-        add_multi = 2
+        add_multi = self.n_queries - 1
         def multi_query(ind):
             label = q_labels[ind]
             cur_possible_inds = indexes_[q_labels == label]
