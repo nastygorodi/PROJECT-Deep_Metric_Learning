@@ -67,8 +67,8 @@ scheduling:
 sampler:
   name: balance
   args:
-    n_labels: 20
-    n_instances: 12
+    n_labels: 10
+    n_instances: 7
 
 transforms_train:
   name: augs_hypvit_torch
