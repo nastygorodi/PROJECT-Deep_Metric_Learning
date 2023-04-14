@@ -13,7 +13,7 @@ from torch.utils.data import DataLoader
 from oml.const import BBOXES_COLUMNS, EMBEDDINGS_KEY, TCfg
 from oml.datasets.base import DatasetQueryGallery, DatasetWithLabels
 from oml.inference.flat import inference_on_dataframe
-from oml.interfaces.models import IPairwiseModel
+from models.model import IMultiQueryModel
 from oml.lightning.callbacks.metric import MetricValCallback, MetricValCallbackDDP
 from utils.parsing import (
     check_is_config_for_ddp,
@@ -23,17 +23,16 @@ from utils.parsing import (
     parse_sampler_from_config,
     parse_scheduler_from_config,
 )
-from oml.lightning.modules.pairwise_postprocessing import (
-    PairwiseModule,
-    PairwiseModuleDDP,
+from modules.multi_query_postprocessing import (
+    MultiQueryModule,
+    MultiQueryModuleDDP,
 )
 from oml.metrics.embeddings import EmbeddingMetrics, EmbeddingMetricsDDP
-from oml.miners.pairs import PairsMiner
+from miners.multi_query_miner import MultiQueryMiner_naive
 from oml.registry.models import get_extractor_by_cfg
 from oml.registry.optimizers import get_optimizer_by_cfg
 from oml.registry.postprocessors import get_postprocessor_by_cfg
 from oml.registry.transforms import get_transforms_by_cfg
-from oml.retrieval.postprocessors.pairwise import PairwiseImagesPostprocessor
 from oml.transforms.images.torchvision import get_normalisation_resize_torch
 from oml.utils.misc import (
     dictconfig_to_dict,
@@ -124,23 +123,24 @@ def pl_train_postprocessor(cfg: DictConfig) -> None:
     loader_train, loader_val = get_loaders_with_embeddings(cfg)
 
     postprocessor = None if not cfg.get("postprocessor", None) else get_postprocessor_by_cfg(cfg["postprocessor"])
-    assert isinstance(postprocessor.model, IPairwiseModel), f"You model must be a child of {IPairwiseModel.__name__}"
+    assert isinstance(postprocessor.model, IMultiQueryModel), f"You model must be a child of {IMultiQueryModel.__name__}"
 
     criterion = torch.nn.BCEWithLogitsLoss()
-    pairs_miner = PairsMiner(hard_mining=cfg["hard_pairs_mining"])
+    miner = MultiQueryMiner_naive(n_queries=cfg["n_queries"])
     optimizer = get_optimizer_by_cfg(cfg["optimizer"], **{"params": postprocessor.model.parameters()})
 
     module_kwargs = {}
     module_kwargs.update(parse_scheduler_from_config(cfg, optimizer=optimizer))
     if is_ddp:
         module_kwargs.update({"loaders_train": loader_train, "loaders_val": loader_val})
-        module_constructor = PairwiseModuleDDP
+        module_constructor = MultiQueryModuleDDP
     else:
-        module_constructor = PairwiseModule  # type: ignore
+        module_constructor = MultiQueryModule  # type: ignore
 
     pl_module = module_constructor(
-        pairwise_model=postprocessor.model,
-        pairs_miner=pairs_miner,
+        multi_query_model=postprocessor.model,
+        n_queries=cfg["n_queries"],
+        miner=miner,
         criterion=criterion,
         optimizer=optimizer,
         input_tensors_key=loader_train.dataset.input_tensors_key,
