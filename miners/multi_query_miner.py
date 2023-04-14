@@ -17,7 +17,7 @@ class MultiQueryMiner_naive(IMultiQueryMiner):
 
     """
 
-    def __init__(self, n_queries: int, max_out: int = maxsize, device: str = "cpu"):
+    def __init__(self, n_queries: int, max_out: int = 512, device: str = "cpu"):
         
         self.n_queries = n_queries
         self._max_out = max_out
