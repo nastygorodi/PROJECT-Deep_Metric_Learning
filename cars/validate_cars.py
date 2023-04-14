@@ -14,7 +14,7 @@ POSTPROCESSORS_REGISTRY['multiple_emb'] = MultiEmbeddingsPostprocessor
 PAIRWISE_MODELS_REGISTRY['multi_query_siamese'] = MultiDistanceSiamese
 
 
-@hydra.main(config_path="configs", config_name="val_cars.yaml")
+@hydra.main(config_path="configs", config_name="val_cars_topFreq.yaml")
 def main_hydra(cfg: DictConfig) -> None:
     pl_val(cfg)
 
