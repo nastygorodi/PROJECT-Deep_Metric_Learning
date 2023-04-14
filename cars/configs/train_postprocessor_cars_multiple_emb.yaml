@@ -68,7 +68,7 @@ sampler:
   name: balance
   args:
     n_labels: 20
-    n_instances: 14
+    n_instances: 12
 
 transforms_train:
   name: augs_hypvit_torch
