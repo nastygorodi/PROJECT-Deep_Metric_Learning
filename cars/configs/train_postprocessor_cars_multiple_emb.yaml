@@ -12,14 +12,14 @@ logs_folder: ${now:%Y-%m-%d_%H-%M-%S}_${postfix}
 
 num_workers: 20
 max_epochs: 100
-valid_period: 2 #5
+valid_period: 5
 n_queries: 3
 
 # CACHE EMBEDDINGS PRODUCED BY BASELINE FEATURE EXTRACTOR
 
 embeddings_cache_dir: ${dataset_root}
 
-extractor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-06_19-48-31_metric_learning_cars/checkpoints/best.ckpt #/home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-03-28_02-32-42_metric_learning_cars/checkpoints/best.ckpt
+extractor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-03-28_02-32-42_metric_learning_cars/checkpoints/best.ckpt
 
 extractor:
   name: vit
@@ -61,8 +61,8 @@ scheduling:
 sampler:
   name: balance
   args:
-    n_labels: 2 #30
-    n_instances: 4 #6
+    n_labels: 30
+    n_instances: 6
 
 transforms_train:
   name: augs_hypvit_torch
