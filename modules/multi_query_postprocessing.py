@@ -68,9 +68,9 @@ class MultiQueryModule(pl.LightningModule):
 
     def training_step(self, batch: Dict[str, Any], batch_idx: int) -> Tensor:
         ids1, ids2, is_negative = self.miner.sample(labels=batch[self.labels_key])
-        x1 = batch[self.input_tensors_key][ids1]
-        x2 = batch[self.input_tensors_key][ids2]
-        target = is_negative.float()
+        x1 = batch[self.embeddings_key][ids1]
+        x2 = batch[self.embeddings_key][ids2]
+        target = is_negative.float().view(-1, 1)
 
         predictions = self.model(x1=x1, x2=x2)
 
