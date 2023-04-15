@@ -47,7 +47,7 @@ hard_pairs_mining: True
 optimizer:
   name: adam
   args:
-    lr: 3e-3
+    lr: 1e-3
 
 scheduling:
   scheduler_interval: epoch
@@ -61,7 +61,7 @@ scheduling:
 sampler:
   name: balance
   args:
-    n_labels: 40
+    n_labels: 30
     n_instances: 6
 
 transforms_train:
