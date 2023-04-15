@@ -32,7 +32,7 @@ def multi_query_inference_on_embeddings(
     ) -> Tensor:
         pair1 = batch_[dataset.pair_1st_key].to(device)
         pair2 = batch_[dataset.pair_2nd_key].to(device)
-        return model_.predict(pair1, pair2, train=False)
+        return model_.predict(pair1, pair2)
 
     output = _inference(
         model=model,
