@@ -19,7 +19,7 @@ n_queries: 3
 
 embeddings_cache_dir: ${dataset_root}
 
-extractor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-03-28_02-32-42_metric_learning_cars/checkpoints/best.ckpt
+extractor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-06_19-48-31_metric_learning_cars/checkpoints/best.ckpt #/home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-03-28_02-32-42_metric_learning_cars/checkpoints/best.ckpt
 
 extractor:
   name: vit
@@ -49,19 +49,21 @@ optimizer:
   args:
     lr: 1e-3
 
+freeze_n_epochs: 7
 scheduling:
   scheduler_interval: epoch
   scheduler_frequency: 1
   scheduler:
-    name: cosine_annealing
+    name: multi_step
     args:
-      T_max: 100
-      eta_min: 1e-5
+      gamma: 1e-2
+      milestones:
+        - ${freeze_n_epochs}
 
 sampler:
   name: balance
   args:
-    n_labels: 30
+    n_labels: 40
     n_instances: 6
 
 transforms_train:
