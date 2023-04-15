@@ -11,7 +11,7 @@ dataframe_name: df_no_bboxes.csv
 logs_folder: ${now:%Y-%m-%d_%H-%M-%S}_${postfix}
 
 num_workers: 20
-max_epochs: 100
+max_epochs: 1000
 valid_period: 5
 n_queries: 3
 
