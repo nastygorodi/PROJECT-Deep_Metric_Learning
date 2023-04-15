@@ -12,7 +12,7 @@ logs_folder: ${now:%Y-%m-%d_%H-%M-%S}_${postfix}
 
 num_workers: 20
 max_epochs: 100
-valid_period: 5
+valid_period: 2 #5
 n_queries: 3
 
 # CACHE EMBEDDINGS PRODUCED BY BASELINE FEATURE EXTRACTOR
@@ -61,8 +61,8 @@ scheduling:
 sampler:
   name: balance
   args:
-    n_labels: 30
-    n_instances: 6
+    n_labels: 2 #30
+    n_instances: 4 #6
 
 transforms_train:
   name: augs_hypvit_torch
