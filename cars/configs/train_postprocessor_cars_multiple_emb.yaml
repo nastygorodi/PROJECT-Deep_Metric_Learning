@@ -7,7 +7,7 @@ devices: 1
 
 dataset_root: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/CARS196
 logs_root: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/
-dataframe_name: df_no_bboxes.csv
+dataframe_name: df.csv
 logs_folder: ${now:%Y-%m-%d_%H-%M-%S}_${postfix}
 
 num_workers: 20
