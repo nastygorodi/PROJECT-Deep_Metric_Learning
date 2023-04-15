@@ -11,8 +11,8 @@ dataframe_name: df_no_bboxes.csv
 logs_folder: ${now:%Y-%m-%d_%H-%M-%S}_${postfix}
 
 num_workers: 20
-max_epochs: 2000
-valid_period: 10
+max_epochs: 100
+valid_period: 5
 n_queries: 3
 
 # CACHE EMBEDDINGS PRODUCED BY BASELINE FEATURE EXTRACTOR
@@ -37,34 +37,26 @@ transforms_extraction:
 # TRAIN POSTPROCESSOR
 
 pairwise_model:
-  name: multi_query_siamese
+  name: multi_query_cat
   args:
     hidden_dim: 256
-    extractor:
-      name: vit
-      args:
-        normalise_features: False
-        use_multi_scale: False
-        weights: ${extractor_weights}
-        arch: vits16
+    n_query: ${n_queries}
 
 hard_pairs_mining: True
 
 optimizer:
   name: adam
   args:
-    lr: 2e-3
+    lr: 1e-3
 
-freeze_n_epochs: 3
 scheduling:
   scheduler_interval: epoch
   scheduler_frequency: 1
   scheduler:
-    name: multi_step
+    name: cosine_annealing
     args:
-      gamma: 5e-3
-      milestones:
-        - ${freeze_n_epochs}
+      T_max: 100
+      eta_min: 1e-5
 
 sampler:
   name: balance
@@ -105,7 +97,7 @@ metric_args:
   visualize_only_main_category: True
 
 # To use neptune you should also specify NEPTUNE_API_TOKEN in
-# .env file or via `export NEPTUNE_API_TOKEN=...`
+# .env file or via export NEPTUNE_API_TOKEN=...
 neptune_project: null
 
 wandb_project: DIPLOMA
