@@ -49,14 +49,16 @@ optimizer:
   args:
     lr: 1e-3
 
+freeze_n_epochs: 170
 scheduling:
   scheduler_interval: epoch
   scheduler_frequency: 1
   scheduler:
-    name: cosine_annealing
+    name: multi_step
     args:
-      T_max: 1000
-      eta_min: 1e-5
+      gamma: 1e-2
+      milestones:
+        - ${freeze_n_epochs}
 
 sampler:
   name: balance
