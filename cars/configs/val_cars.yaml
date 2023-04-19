@@ -3,7 +3,7 @@ precision: 32
 devices: 1
 
 dataset_root: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/CARS196
-dataframe_name: df.csv
+dataframe_name: df_no_bboxes.csv
 logs_root: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/
 
 bs_val: 128
@@ -14,7 +14,7 @@ transforms_val:
   args:
     im_size: 224
 
-weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-06_19-48-31_metric_learning_cars/checkpoints/best.ckpt #/home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-03-28_02-32-42_metric_learning_cars/checkpoints/best.ckpt
+weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-16_01-19-44_metric_learning_cars/checkpoints/best.ckpt
 
 model:
   name: vit
