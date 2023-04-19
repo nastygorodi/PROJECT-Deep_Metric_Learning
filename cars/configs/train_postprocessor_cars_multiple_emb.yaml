@@ -76,7 +76,7 @@ batch_size_inference: 128
 postprocessor:
   name: multiple_emb
   args:
-    top_n: 5
+    top_n: 10
     n_queries: ${n_queries}
     pairwise_model: ${pairwise_model}
     num_workers: ${num_workers}
