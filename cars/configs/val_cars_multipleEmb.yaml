@@ -10,7 +10,7 @@ num_workers: 20
 n_queries: 3
 
 extractor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-16_01-19-44_metric_learning_cars/checkpoints/best.ckpt
-postprocessor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-20_00-15-47_postprocessing/checkpoints/best.ckpt
+postprocessor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-19_18-49-37_postprocessing/checkpoints/best.ckpt #/home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-20_00-15-47_postprocessing/checkpoints/best.ckpt
 
 transforms_val:
   name: norm_resize_hypvit_torch
