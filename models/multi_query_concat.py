@@ -37,7 +37,7 @@ class MultiConcat(IMultiQueryModel):
 
             loaded = torch.load(weights, map_location="cpu")
             loaded = loaded.get("state_dict", loaded)
-            loaded = remain_prefix_in_state_dict(loaded, prefix="extractor.")
+            loaded = remain_prefix_in_state_dict(loaded, prefix="proj.")
             
             self.load_state_dict(loaded, strict=strict_load)
         
