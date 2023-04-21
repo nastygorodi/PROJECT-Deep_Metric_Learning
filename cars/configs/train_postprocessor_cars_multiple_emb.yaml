@@ -49,14 +49,14 @@ optimizer:
   args:
     lr: 1e-3
 
-freeze_n_epochs: [100, 400, 800]
+freeze_n_epochs: 100
 scheduling:
   scheduler_interval: epoch
   scheduler_frequency: 1
   scheduler:
     name: multi_step
     args:
-      gamma: 1e-1
+      gamma: 1e-2
       milestones:
         - ${freeze_n_epochs}
 
@@ -64,7 +64,7 @@ sampler:
   name: balance
   args:
     n_labels: 30
-    n_instances: 6
+    n_instances: 7
 
 transforms_train:
   name: augs_hypvit_torch
@@ -73,7 +73,7 @@ transforms_train:
 
 # VALIDATE POSTPROCESSOR BY RE-RANKING TOP-N OUTPUTS
 
-batch_size_inference: 128
+batch_size_inference: 512
 
 postprocessor:
   name: multiple_emb
