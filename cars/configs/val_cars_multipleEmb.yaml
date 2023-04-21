@@ -10,7 +10,7 @@ num_workers: 20
 n_queries: 3
 
 extractor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-16_01-19-44_metric_learning_cars/checkpoints/best.ckpt
-postprocessor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-20_00-15-47_postprocessing/checkpoints/best.ckpt
+postprocessor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-21_19-01-44_postprocessing/checkpoints/best.ckpt
 
 transforms_val:
   name: norm_resize_hypvit_torch
@@ -35,7 +35,7 @@ pairwise_model:
 postprocessor:
   name: multiple_emb
   args:
-    top_n: 10
+    top_n: 15
     n_queries: ${n_queries}
     pairwise_model: ${pairwise_model}
     num_workers: ${num_workers}
