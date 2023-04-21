@@ -49,7 +49,7 @@ optimizer:
   args:
     lr: 1e-3
 
-freeze_n_epochs: 170
+freeze_n_epochs: 20
 scheduling:
   scheduler_interval: epoch
   scheduler_frequency: 1
