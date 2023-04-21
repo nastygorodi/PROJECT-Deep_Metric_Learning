@@ -129,7 +129,7 @@ class MultiEmbeddingsPostprocessor(IDistancesPostprocessor, ABC):
         
         multiple_queries = queries[q_inds].view(queries.shape[0], -1)
         
-        multiple_queries = multiple_queries.repeat_interleave(top_n * self.n_queries, dim=0)
+        multiple_queries = multiple_queries.repeat_interleave(top_n, dim=0)
         galleries = galleries[new_ii_top.view(-1)]
         distances_upd = multi_query_inference_on_embeddings(
             model=self.model,
@@ -140,7 +140,7 @@ class MultiEmbeddingsPostprocessor(IDistancesPostprocessor, ABC):
             verbose=self.verbose,
             use_fp16=self.use_fp16,
         )
-        distances_upd = distances_upd.view(n_queries, top_n * self.n_queries)
+        distances_upd = distances_upd.view(n_queries, top_n)
         return distances_upd, new_ii_top
 
     def process_by_dict(self, distances: Tensor, data: Dict[str, Any]) -> Tensor:
