@@ -3,6 +3,7 @@ from typing import Optional, Union
 
 import torch
 from torch import Tensor
+from oml.utils.misc_torch import elementwise_dist
 
 from models.model import IMultiQueryModel
 
@@ -23,9 +24,10 @@ class MultiConcat(IMultiQueryModel):
         super(MultiConcat, self).__init__()
         
         self.feat_dim = 384
+        self.n_query = n_query
 
         self.proj = torch.nn.Sequential(
-            torch.nn.Linear(in_features=self.feat_dim * (n_query + 1), out_features=hidden_dim // 2, bias=False),
+            torch.nn.Linear(in_features=self.feat_dim, out_features=hidden_dim // 2, bias=False),
             torch.nn.ReLU(),
             torch.nn.Linear(in_features=hidden_dim // 2, out_features=hidden_dim // 4, bias=False),
             torch.nn.ReLU(),
@@ -43,9 +45,13 @@ class MultiConcat(IMultiQueryModel):
         
 
     def forward(self, x1: Tensor, x2: Tensor) -> Tensor:
-        res = torch.cat([x1.view(x1.shape[0], -1), x2], dim=-1)
-        res = self.proj(res)
-        return res
+        x1 = x1.view(x1.shape[0], self.n_query, -1)
+        out = torch.ones(x1.shape[0]).to(x1.device) * torch.inf
+        for i in range(self.n_query):
+            cur_res = elementwise_dist(self.proj(x1[:, i]), self.proj(x2), p=2)
+            out = torch.where(cur_res < out, cur_res, out)
+       
+        return out
 
     def predict(self, x1: Tensor, x2: Tensor) -> Tensor:
         return self.forward(x1=x1, x2=x2)
