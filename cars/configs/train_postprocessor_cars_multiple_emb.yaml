@@ -64,7 +64,7 @@ sampler:
   name: balance
   args:
     n_labels: 30
-    n_instances: 7
+    n_instances: 6
 
 transforms_train:
   name: augs_hypvit_torch
@@ -73,7 +73,7 @@ transforms_train:
 
 # VALIDATE POSTPROCESSOR BY RE-RANKING TOP-N OUTPUTS
 
-batch_size_inference: 512
+batch_size_inference: 128
 
 postprocessor:
   name: multiple_emb
