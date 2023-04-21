@@ -43,7 +43,8 @@ def get_available_items(n_queries: int, labels: List[int], max_out: int = maxsiz
         
         item = [(*p, n, 1) for p, n in product(pos_n, ids_neg_cur)]
         
-        item = sample(item, len(pos_p))
+        len_neg = round(len(pos_p) * 0.33)
+        item = sample(item, len_neg)
 
         item += [(*p, 0) for p in pos_p]
 
