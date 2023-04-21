@@ -70,11 +70,11 @@ class MultiQueryModule(pl.LightningModule):
         ids1, ids2, is_negative = self.miner.sample(labels=batch[self.labels_key])
         x1 = batch[self.embeddings_key][ids1]
         x2 = batch[self.embeddings_key][ids2]
-        target = is_negative.float().view(-1, 1)
+        target = is_negative.float()
 
         predictions = self.model(x1=x1, x2=x2)
 
-        loss = self.criterion(predictions, target.to(predictions.device))
+        loss = self.criterion(predictions, target.view(predictions.shape).to(predictions.device))
 
         bs = len(batch[self.labels_key])
 
