@@ -47,16 +47,18 @@ hard_pairs_mining: True
 optimizer:
   name: adam
   args:
-    lr: 1e-4
+    lr: 1e-3
 
+freeze_n_epochs: [100, 400, 800]
 scheduling:
   scheduler_interval: epoch
   scheduler_frequency: 1
   scheduler:
-    name: cosine_annealing
+    name: multi_step
     args:
-      T_max: 1000
-      eta_min: 1e-6
+      gamma: 1e-1
+      milestones:
+        - ${freeze_n_epochs}
 
 sampler:
   name: balance
