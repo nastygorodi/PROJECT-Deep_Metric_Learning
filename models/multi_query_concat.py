@@ -25,9 +25,9 @@ class MultiConcat(IMultiQueryModel):
         self.feat_dim = 384
 
         self.proj = torch.nn.Sequential(
-            torch.nn.Linear(in_features=self.feat_dim * (n_query + 1), out_features=hidden_dim // 2, bias=False),
+            torch.nn.Linear(in_features=self.feat_dim * (n_query + 1), out_features=hidden_dim, bias=False),
             torch.nn.ReLU(),
-            torch.nn.Linear(in_features=hidden_dim // 2, out_features=hidden_dim // 4, bias=False),
+            torch.nn.Linear(in_features=hidden_dim, out_features=hidden_dim // 4, bias=False),
             torch.nn.ReLU(),
             torch.nn.Linear(in_features=hidden_dim // 4, out_features=1, bias=False)
             
