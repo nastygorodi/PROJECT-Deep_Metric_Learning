@@ -67,7 +67,7 @@ criterion:
 
 
 optimizer:
-  name: adamw
+  name: adam
   args:
     lr: 5e-5  # if you provide scheduler this parameter will be ignored
 
@@ -80,7 +80,7 @@ scheduling:
     name: cosine_annealing
     args:
       T_max: 4000
-      eta_min: 1e-6
+      eta_min: 5e-6
 
 
 # To use neptune you should also specify NEPTUNE_API_TOKEN in
