@@ -5,50 +5,12 @@ import torch
 from torch import Tensor
 
 from oml.const import EMBEDDINGS_KEY, IS_GALLERY_KEY, IS_QUERY_KEY, LABELS_KEY
-from oml.inference.abstract import _inference
-from oml.interfaces.retrieval import IDistancesPostprocessor
 from models.model import IMultiQueryModel
 from oml.utils.misc_torch import assign_2d
-from oml.utils.misc_torch import get_device
-from dataset.multi_query import MultiQueryEmbeddingDataset
-
-def multi_query_inference_on_embeddings(
-    model: IMultiQueryModel,
-    embeddings_query: Tensor,
-    embeddings_gallery: Tensor,
-    num_workers: int,
-    batch_size: int,
-    verbose: bool = False,
-    use_fp16: bool = False,
-    accumulate_on_cpu: bool = True,
-) -> Tensor:
-    device = get_device(model)
-
-    dataset = MultiQueryEmbeddingDataset(embeddings1=embeddings_query, embeddings2=embeddings_gallery)
-
-    def _apply(
-        model_: IMultiQueryModel,
-        batch_: Dict[str, Any],
-    ) -> Tensor:
-        pair1 = batch_[dataset.pair_1st_key].to(device)
-        pair2 = batch_[dataset.pair_2nd_key].to(device)
-        return model_.predict(pair1, pair2)
-
-    output = _inference(
-        model=model,
-        apply_model=_apply,
-        dataset=dataset,
-        num_workers=num_workers,
-        batch_size=batch_size,
-        verbose=verbose,
-        use_fp16=use_fp16,
-        accumulate_on_cpu=accumulate_on_cpu,
-    )
-
-    return output
+from multiple_emb import MultiEmbeddingsPostprocessor, multi_query_inference_on_embeddings
 
 
-class MultiEmbeddingsFreqPostprocessor(IDistancesPostprocessor, ABC):
+class MultiEmbeddingsFreqPostprocessor(MultiEmbeddingsPostprocessor):
     def __init__(
         self,
         top_n: int,
@@ -77,37 +39,6 @@ class MultiEmbeddingsFreqPostprocessor(IDistancesPostprocessor, ABC):
         self.is_gallery_key = is_gallery_key
         self.embeddings_key = embeddings_key
         self.label_key = label_key
-
-    def process(self, distances: Tensor, queries: Any, galleries: Any, q_labels: Any) -> Tensor:
-
-        n_queries = len(queries)
-        n_galleries = len(galleries)
-
-        assert list(distances.shape) == [n_queries, n_galleries]
-
-        top_n = min(self.top_n, n_galleries)
-        ii_top = torch.topk(distances, k=top_n, largest=False)[1]
-
-        if self.verbose:
-            print("\nPostprocessor's inference has been started...")
-        distances_upd, new_ii_top = self.inference(queries=queries, 
-                                                   galleries=galleries, 
-                                                   distances=torch.clone(distances), 
-                                                   top_n=top_n, q_labels=q_labels)
-        new_ii_top = new_ii_top.to(ii_top.device).to(ii_top.dtype)
-        distances_upd = distances_upd.to(distances.device).to(distances.dtype)
-
-        if top_n < n_galleries:
-            min_in_old_distances = torch.topk(distances, k=top_n + 1, largest=False)[0][:, -1]
-            max_in_new_distances = distances_upd.max(dim=1)[0]
-            offset = max_in_new_distances - min_in_old_distances + 1e-5
-            distances += offset.unsqueeze(-1)
-
-        distances = assign_2d(x=distances, indices=new_ii_top, new_values=distances_upd)
-
-        assert list(distances.shape) == [n_queries, n_galleries]
-
-        return distances
     
     def inference(self, queries: Tensor, galleries: Tensor, distances: Tensor, top_n: int, q_labels: Tensor) -> Tensor:
         n_queries = len(queries)
@@ -150,12 +81,6 @@ class MultiEmbeddingsFreqPostprocessor(IDistancesPostprocessor, ABC):
         )
         distances_upd = distances_upd.view(n_queries, top_n)
         return distances_upd, multi_ii
-
-    def process_by_dict(self, distances: Tensor, data: Dict[str, Any]) -> Tensor:
-        queries = data[self.embeddings_key][data[self.is_query_key]]
-        galleries = data[self.embeddings_key][data[self.is_gallery_key]]
-        q_labels = data[self.label_key][data[self.is_query_key]]
-        return self.process(distances=distances, queries=queries, galleries=galleries, q_labels=q_labels)
 
     @property
     def needed_keys(self) -> List[str]:
