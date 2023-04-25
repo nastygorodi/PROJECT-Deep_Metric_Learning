@@ -7,7 +7,7 @@ from torch import Tensor
 from oml.const import EMBEDDINGS_KEY, IS_GALLERY_KEY, IS_QUERY_KEY, LABELS_KEY
 from models.model import IMultiQueryModel
 from oml.utils.misc_torch import assign_2d
-from multiple_emb import MultiEmbeddingsPostprocessor, multi_query_inference_on_embeddings
+from postprocessing.multiple_emb import MultiEmbeddingsPostprocessor, multi_query_inference_on_embeddings
 
 
 class MultiEmbeddingsFreqPostprocessor(MultiEmbeddingsPostprocessor):
