@@ -37,7 +37,7 @@ transforms_extraction:
 # TRAIN POSTPROCESSOR
 
 pairwise_model:
-  name: multi_query_cat
+  name: multi_query_attn
   args:
     hidden_dim: 256
     n_query: ${n_queries}
@@ -47,7 +47,7 @@ hard_pairs_mining: True
 optimizer:
   name: adam
   args:
-    lr: 7e-4
+    lr: 1e-4
 
 scheduling:
   scheduler_interval: epoch
