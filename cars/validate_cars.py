@@ -8,11 +8,13 @@ from oml.registry.models import PAIRWISE_MODELS_REGISTRY
 from postprocessing.top_freq import TopFrequencyPostprocessor
 from postprocessing.multiple_emb import MultiEmbeddingsPostprocessor
 from models.multi_query_concat import MultiConcat
+from models.multi_query_concat_attn import MultiConcatWithAttention
 
 
 POSTPROCESSORS_REGISTRY['top_freq'] = TopFrequencyPostprocessor
 POSTPROCESSORS_REGISTRY['multiple_emb'] = MultiEmbeddingsPostprocessor
 PAIRWISE_MODELS_REGISTRY['multi_query_cat'] = MultiConcat
+PAIRWISE_MODELS_REGISTRY['multi_query_attn'] = MultiConcatWithAttention
 
 @hydra.main(config_path="configs", config_name="val_cars_multipleEmb.yaml")
 def main_hydra(cfg: DictConfig) -> None:
