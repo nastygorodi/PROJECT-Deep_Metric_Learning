@@ -26,8 +26,8 @@ transforms_val:
 sampler:
   name: balance
   args:
-    n_labels: 30
-    n_instances: 15
+    n_labels: 20
+    n_instances: 10
 
 bs_val: 512
 max_epochs: 4000
