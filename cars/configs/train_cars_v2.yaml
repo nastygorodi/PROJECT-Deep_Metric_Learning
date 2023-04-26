@@ -26,11 +26,11 @@ transforms_val:
 sampler:
   name: balance
   args:
-    n_labels: 20
-    n_instances: 10
+    n_labels: 30
+    n_instances: 15
 
 bs_val: 512
-max_epochs: 6000
+max_epochs: 4000
 valid_period: 10
 
 metric_args:
@@ -67,20 +67,22 @@ criterion:
 
 
 optimizer:
-  name: adam
+  name: adamw
   args:
-    lr: 5e-5  # if you provide scheduler this parameter will be ignored
+    lr: 1e-5  # if you provide scheduler this parameter will be ignored
 
 
+freeze_n_epochs: 3500
 scheduling:
   scheduler_interval: epoch
   scheduler_frequency: 1
   monitor_metric: triplet_loss_epoch
   scheduler:
-    name: cosine_annealing
+    name: multi_step
     args:
-      T_max: 6000
-      eta_min: 1e-6
+      gamma: 1e-1
+      milestones:
+        - ${freeze_n_epochs}
 
 
 # To use neptune you should also specify NEPTUNE_API_TOKEN in
