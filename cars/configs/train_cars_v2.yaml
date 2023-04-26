@@ -72,7 +72,6 @@ optimizer:
     lr: 1e-5  # if you provide scheduler this parameter will be ignored
 
 
-freeze_n_epochs: 3500
 scheduling:
   scheduler_interval: epoch
   scheduler_frequency: 1
@@ -82,7 +81,7 @@ scheduling:
     args:
       gamma: 1e-1
       milestones:
-        - ${freeze_n_epochs}
+        - 3500
 
 
 # To use neptune you should also specify NEPTUNE_API_TOKEN in
