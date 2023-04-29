@@ -23,9 +23,9 @@ class Attention(torch.nn.Module):
         qkv = self.qkv(x.transpose(-1, -2)).reshape(B, -1, n, self.num_heads, emb_size // self.num_heads).permute(1, 0, 2, 3, 4) # 3 x B x n x heads x emb
         q, k, v = qkv[0], qkv[1], qkv[2] # B x n x heads x dim
         
-        q = q.permute(2, 0, 1, 3).view(B * self.num_heads, n, -1)
-        k = k.permute(2, 0, 1, 3).view(B * self.num_heads, n, -1)
-        v = v.permute(2, 0, 1, 3).view(B * self.num_heads, n, -1)
+        q = q.permute(2, 0, 1, 3).reshape(B * self.num_heads, n, -1)
+        k = k.permute(2, 0, 1, 3).reshape(B * self.num_heads, n, -1)
+        v = v.permute(2, 0, 1, 3).reshape(B * self.num_heads, n, -1)
 
         attn = (q @ k.transpose(-2, -1)) * self.scale # Bheads x n x n
         attn = attn.softmax(dim=-1)
@@ -33,7 +33,7 @@ class Attention(torch.nn.Module):
 
         x = (attn @ v)
         x = x.view(self.num_heads, B, n, -1)
-        x = x.permute(1, 2, 0, 3).view(B, n, emb_size).transpose(-1, -2)
+        x = x.permute(1, 2, 0, 3).reshape(B, n, emb_size).transpose(-1, -2)
         return x, attn
 
 
