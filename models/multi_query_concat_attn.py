@@ -39,7 +39,7 @@ class MultiConcatWithAttention(IMultiQueryModel):
         self.n_heads = n_heads
         self.attn = Attention(dim=self.feat_dim, num_heads=self.n_heads)
 
-        self.proj = torch.nn.Linear(in_features=self.feat_dim, out_features=1, bias=False)
+        self.proj = torch.nn.Linear(in_features=self.feat_dim // 2, out_features=1, bias=False)
         
         if weights:
 
