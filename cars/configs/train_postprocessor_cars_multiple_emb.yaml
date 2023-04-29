@@ -47,7 +47,7 @@ hard_pairs_mining: True
 optimizer:
   name: adam
   args:
-    lr: 5e-5
+    lr: 7e-4
 
 scheduling:
   scheduler_interval: epoch
