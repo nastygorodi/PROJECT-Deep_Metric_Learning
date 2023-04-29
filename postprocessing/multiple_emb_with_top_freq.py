@@ -66,7 +66,7 @@ class MultiEmbeddingsFreqPostprocessor(MultiEmbeddingsPostprocessor):
         
         multi_ii = torch.cat([top_freq(multi_ii_top[i]) for i in range(multi_ii_top.shape[0])], dim=0)
         
-        multiple_queries = queries[q_inds].view(queries.shape[0], -1)
+        multiple_queries = queries[q_inds]#.view(queries.shape[0], -1)
         
         multiple_queries = multiple_queries.repeat_interleave(top_n, dim=0)
         galleries = galleries[multi_ii.view(-1)]

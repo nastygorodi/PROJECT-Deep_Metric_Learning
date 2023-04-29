@@ -127,7 +127,7 @@ class MultiEmbeddingsPostprocessor(IDistancesPostprocessor, ABC):
         new_ii_top = torch.topk(distances, k=top_n, largest=False)[1]
         #multi_ii_top = new_ii_top[q_inds].view(q_inds.shape[0], -1)
         
-        multiple_queries = queries[q_inds].view(queries.shape[0], -1)
+        multiple_queries = queries[q_inds]#.view(queries.shape[0], -1)
         
         multiple_queries = multiple_queries.repeat_interleave(top_n, dim=0)
         galleries = galleries[new_ii_top.view(-1)]
