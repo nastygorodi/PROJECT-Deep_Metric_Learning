@@ -47,7 +47,7 @@ hard_pairs_mining: True
 optimizer:
   name: adam
   args:
-    lr: 2e-3
+    lr: 7e-4
 
 scheduling:
   scheduler_interval: epoch
@@ -56,13 +56,13 @@ scheduling:
     name: cosine_annealing
     args:
       T_max: 2000
-      eta_min: 1e-6
+      eta_min: 5e-6
 
 sampler:
   name: balance
   args:
-    n_labels: 30
-    n_instances: 6
+    n_labels: 40
+    n_instances: 7
 
 transforms_train:
   name: augs_hypvit_torch

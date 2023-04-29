@@ -15,10 +15,10 @@ class Attention(torch.nn.Module):
         head_dim = dim // num_heads
         self.scale = qk_scale or head_dim**-0.5
 
-        self.q_proj = torch.nn.Linear(dim, dim // 2, bias=qkv_bias)
-        self.k_proj = torch.nn.Linear(dim, dim // 2, bias=qkv_bias)
-        self.v_proj = torch.nn.Linear(dim, dim // 2, bias=qkv_bias)
-        self.mhattn = torch.nn.MultiheadAttention(dim // 2, num_heads, batch_first=True)
+        self.q_proj = torch.nn.Linear(dim, dim, bias=qkv_bias)
+        self.k_proj = torch.nn.Linear(dim, dim, bias=qkv_bias)
+        self.v_proj = torch.nn.Linear(dim, dim, bias=qkv_bias)
+        self.mhattn = torch.nn.MultiheadAttention(dim, num_heads, batch_first=True)
 
     def forward(self, x):
         q = self.q_proj(x)
@@ -39,7 +39,7 @@ class MultiConcatWithAttention(IMultiQueryModel):
         self.n_heads = n_heads
         self.attn = Attention(dim=self.feat_dim, num_heads=self.n_heads)
 
-        self.proj = torch.nn.Linear(in_features=self.feat_dim // 2, out_features=1, bias=False)
+        self.proj = torch.nn.Linear(in_features=self.feat_dim, out_features=1, bias=False)
         
         if weights:
 
