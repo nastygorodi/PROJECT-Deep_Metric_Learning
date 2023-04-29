@@ -15,9 +15,9 @@ class Attention(torch.nn.Module):
         head_dim = dim // num_heads
         self.scale = qk_scale or head_dim**-0.5
 
-        self.q_proj = torch.nn.Linear(dim, dim, bias=qkv_bias)
-        self.k_proj = torch.nn.Linear(dim, dim, bias=qkv_bias)
-        self.v_proj = torch.nn.Linear(dim, dim, bias=qkv_bias)
+        self.q_proj = torch.nn.Linear(dim, dim // 2, bias=qkv_bias)
+        self.k_proj = torch.nn.Linear(dim, dim // 2, bias=qkv_bias)
+        self.v_proj = torch.nn.Linear(dim, dim // 2, bias=qkv_bias)
         self.mhattn = torch.nn.MultiheadAttention(dim, num_heads, batch_first=True)
 
     def forward(self, x):

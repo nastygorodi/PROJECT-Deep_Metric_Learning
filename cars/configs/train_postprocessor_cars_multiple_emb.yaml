@@ -1,6 +1,6 @@
 postfix: "postprocessing"
 
-seed: 42
+seed: 3407
 precision: 16
 accelerator: gpu
 devices: 1
@@ -11,8 +11,8 @@ dataframe_name: df_no_bboxes.csv
 logs_folder: ${now:%Y-%m-%d_%H-%M-%S}_${postfix}
 
 num_workers: 20
-max_epochs: 1000
-valid_period: 5
+max_epochs: 2000
+valid_period: 10
 n_queries: 3
 
 # CACHE EMBEDDINGS PRODUCED BY BASELINE FEATURE EXTRACTOR
@@ -20,7 +20,6 @@ n_queries: 3
 embeddings_cache_dir: ${dataset_root}
 
 extractor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-16_01-19-44_metric_learning_cars/checkpoints/best.ckpt
-postprocessor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-29_18-57-09_postprocessing/checkpoints/best.ckpt
 
 extractor:
   name: vit
@@ -42,14 +41,13 @@ pairwise_model:
   args:
     n_heads: 4
     n_query: ${n_queries}
-    weights: ${postprocessor_weights}
 
 hard_pairs_mining: True
 
 optimizer:
   name: adam
   args:
-    lr: 7e-4
+    lr: 2e-3
 
 scheduling:
   scheduler_interval: epoch
@@ -57,7 +55,7 @@ scheduling:
   scheduler:
     name: cosine_annealing
     args:
-      T_max: 1000
+      T_max: 2000
       eta_min: 1e-6
 
 sampler:
