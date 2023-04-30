@@ -14,6 +14,7 @@ class TopFrequencyPostprocessor(IDistancesPostprocessor, ABC):
     def __init__(
         self,
         top_n: int,
+        #q_inds_path,
         num_workers: int,
         batch_size: int,
         verbose: bool = False,
@@ -26,6 +27,8 @@ class TopFrequencyPostprocessor(IDistancesPostprocessor, ABC):
         assert top_n > 1, "Number of galleries for each query to process has to be greater than 1."
 
         self.top_n = top_n
+        # with open(q_inds_path, 'rb') as f:
+        #     self.q_inds = torch.load(f)
         self.num_workers = num_workers
         self.batch_size = batch_size
         self.verbose = verbose
@@ -76,6 +79,11 @@ class TopFrequencyPostprocessor(IDistancesPostprocessor, ABC):
             return torch.cat((torch.tensor([ind]), cur_possible_inds[inds])).view(1, -1)
         
         q_inds = torch.cat([multi_query(i) for i in range(len(q_labels))], dim=0)
+        #self.q_inds
+        #torch.cat([multi_query(i) for i in range(len(q_labels))], dim=0)
+        
+        print('SAVING...')
+        torch.save(q_inds, '/mnt/c/Users/hutao/Desktop/dml/validation_q_indexes.pt')
         
         distances[torch.arange(0, distances.shape[0]), q_inds.T] = torch.inf
         ii_top = torch.topk(distances, k=top_n, largest=False)[1]
