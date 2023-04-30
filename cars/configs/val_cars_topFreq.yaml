@@ -28,7 +28,7 @@ postprocessor:
   name: top_freq
   args:
     top_n: 5
-    #q_inds_path: /mnt/c/Users/hutao/Desktop/dml/validation_q_indexes.pt
+    q_inds_path: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/validation_q_indexes.pt
     num_workers: 8
     batch_size: 128
     verbose: True

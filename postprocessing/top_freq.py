@@ -14,7 +14,7 @@ class TopFrequencyPostprocessor(IDistancesPostprocessor, ABC):
     def __init__(
         self,
         top_n: int,
-        #q_inds_path,
+        q_inds_path,
         num_workers: int,
         batch_size: int,
         verbose: bool = False,
@@ -27,8 +27,8 @@ class TopFrequencyPostprocessor(IDistancesPostprocessor, ABC):
         assert top_n > 1, "Number of galleries for each query to process has to be greater than 1."
 
         self.top_n = top_n
-        # with open(q_inds_path, 'rb') as f:
-        #     self.q_inds = torch.load(f)
+        with open(q_inds_path, 'rb') as f:
+            self.q_inds = torch.load(f)
         self.num_workers = num_workers
         self.batch_size = batch_size
         self.verbose = verbose
@@ -39,7 +39,7 @@ class TopFrequencyPostprocessor(IDistancesPostprocessor, ABC):
         self.embeddings_key = embeddings_key
         self.label_key = label_key
     
-    def process(self, distances: Tensor, queries: Any, galleries: Any, q_labels: Any) -> Tensor:
+    def process(self, distances: Tensor, queries: Any, galleries: Any) -> Tensor:
         
         n_queries = len(queries)
         n_galleries = len(galleries)
@@ -51,7 +51,7 @@ class TopFrequencyPostprocessor(IDistancesPostprocessor, ABC):
 
         if self.verbose:
             print("\nPostprocessor's inference has been started...")
-        new_ii_top = self.inference(q_labels=q_labels, distances=torch.clone(distances), top_n=top_n)
+        new_ii_top = self.inference(distances=torch.clone(distances), top_n=top_n)
         new_ii_top = new_ii_top.to(ii_top.device).to(ii_top.dtype)
         distances_upd = torch.arange(1, top_n + 1).view(1, -1).repeat_interleave(new_ii_top.shape[0], dim=0)
         distances_upd = distances_upd.to(distances.device).to(distances.dtype)
@@ -68,22 +68,8 @@ class TopFrequencyPostprocessor(IDistancesPostprocessor, ABC):
 
         return distances
 
-    def inference(self, q_labels: Tensor, distances: Tensor, top_n: int) -> Tensor:
-        indexes_ = torch.arange(q_labels.shape[0])
-        add_multi = 2
-        def multi_query(ind):
-            label = q_labels[ind]
-            cur_possible_inds = indexes_[q_labels == label]
-            cur_possible_inds = cur_possible_inds[cur_possible_inds != ind]
-            inds = torch.randperm(len(cur_possible_inds))[:add_multi]
-            return torch.cat((torch.tensor([ind]), cur_possible_inds[inds])).view(1, -1)
-        
-        q_inds = torch.cat([multi_query(i) for i in range(len(q_labels))], dim=0)
-        #self.q_inds
-        #torch.cat([multi_query(i) for i in range(len(q_labels))], dim=0)
-        
-        print('SAVING...')
-        torch.save(q_inds, '/home/aagorodilova_2/PROJECT-Deep_Metric_Learning/validation_q_indexes.pt')
+    def inference(self, distances: Tensor, top_n: int) -> Tensor:
+        q_inds = self.q_inds
         
         distances[torch.arange(0, distances.shape[0]), q_inds.T] = torch.inf
         ii_top = torch.topk(distances, k=top_n, largest=False)[1]
@@ -102,8 +88,7 @@ class TopFrequencyPostprocessor(IDistancesPostprocessor, ABC):
     def process_by_dict(self, distances: Tensor, data: Dict[str, Any]) -> Tensor:
         queries = data[self.embeddings_key][data[self.is_query_key]]
         galleries = data[self.embeddings_key][data[self.is_gallery_key]]
-        q_labels = data[self.label_key][data[self.is_query_key]]
-        return self.process(distances=distances, queries=queries, galleries=galleries, q_labels=q_labels)
+        return self.process(distances=distances, queries=queries, galleries=galleries)
 
     @property
     def needed_keys(self) -> List[str]:
