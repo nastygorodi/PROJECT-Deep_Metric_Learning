@@ -83,7 +83,7 @@ class TopFrequencyPostprocessor(IDistancesPostprocessor, ABC):
         #torch.cat([multi_query(i) for i in range(len(q_labels))], dim=0)
         
         print('SAVING...')
-        torch.save(q_inds, '/mnt/c/Users/hutao/Desktop/dml/validation_q_indexes.pt')
+        torch.save(q_inds, '/home/aagorodilova_2/PROJECT-Deep_Metric_Learning/validation_q_indexes.pt')
         
         distances[torch.arange(0, distances.shape[0]), q_inds.T] = torch.inf
         ii_top = torch.topk(distances, k=top_n, largest=False)[1]
