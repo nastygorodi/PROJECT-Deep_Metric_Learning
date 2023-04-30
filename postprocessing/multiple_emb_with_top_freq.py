@@ -15,6 +15,7 @@ class MultiEmbeddingsFreqPostprocessor(MultiEmbeddingsPostprocessor):
         self,
         top_n: int,
         n_queries: int,
+        q_inds_path,
         pairwise_model: IMultiQueryModel,
         num_workers: int,
         batch_size: int,
@@ -29,6 +30,8 @@ class MultiEmbeddingsFreqPostprocessor(MultiEmbeddingsPostprocessor):
 
         self.top_n = top_n
         self.n_queries = n_queries
+        with open(q_inds_path, 'rb') as f:
+            self.q_inds = torch.load(f)
         self.model = pairwise_model
         self.num_workers = num_workers
         self.batch_size = batch_size
@@ -40,19 +43,9 @@ class MultiEmbeddingsFreqPostprocessor(MultiEmbeddingsPostprocessor):
         self.embeddings_key = embeddings_key
         self.label_key = label_key
     
-    def inference(self, queries: Tensor, galleries: Tensor, distances: Tensor, top_n: int, q_labels: Tensor) -> Tensor:
-        n_queries = len(queries)
-        
-        indexes_ = torch.arange(q_labels.shape[0])
-        add_multi = self.n_queries - 1
-        def multi_query(ind):
-            label = q_labels[ind]
-            cur_possible_inds = indexes_[q_labels == label]
-            cur_possible_inds = cur_possible_inds[cur_possible_inds != ind]
-            inds = torch.randperm(len(cur_possible_inds))[:add_multi]
-            return torch.cat((torch.tensor([ind]), cur_possible_inds[inds])).view(1, -1)
-        
-        q_inds = torch.cat([multi_query(i) for i in range(len(q_labels))], dim=0)
+    def inference(self, queries: Tensor, galleries: Tensor, distances: Tensor, top_n: int) -> Tensor:
+        q_inds = self.q_inds
+        n_queries = q_inds.shape[0]
         
         distances[torch.arange(0, distances.shape[0]), q_inds.T] = torch.inf
         new_ii_top = torch.topk(distances, k=top_n, largest=False)[1]

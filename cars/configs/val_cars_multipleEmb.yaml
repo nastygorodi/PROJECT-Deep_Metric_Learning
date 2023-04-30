@@ -10,7 +10,7 @@ num_workers: 20
 n_queries: 3
 
 extractor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-16_01-19-44_metric_learning_cars/checkpoints/best.ckpt
-postprocessor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-25_16-12-01_postprocessing/checkpoints/best.ckpt
+postprocessor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-21_19-01-44_postprocessing/checkpoints/best.ckpt
 
 transforms_val:
   name: norm_resize_hypvit_torch
@@ -26,7 +26,7 @@ model:
     weights: ${extractor_weights}
 
 pairwise_model:
-  name: multi_query_attn
+  name: multi_query_cat
   args:
     hidden_dim: 256
     n_query: ${n_queries}
@@ -37,6 +37,7 @@ postprocessor:
   args:
     top_n: 15
     n_queries: ${n_queries}
+    q_inds_path: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/validation_q_indexes.pt
     pairwise_model: ${pairwise_model}
     num_workers: ${num_workers}
     batch_size: ${bs_val}
