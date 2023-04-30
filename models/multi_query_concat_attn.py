@@ -7,27 +7,6 @@ from torch import Tensor
 from models.model import IMultiQueryModel
 from models.multi_query_concat import remain_prefix_in_state_dict
 
-    
-class Attention(torch.nn.Module):
-    def __init__(self, dim, num_heads=8, qkv_bias=False, qk_scale=None):
-        super().__init__()
-        self.num_heads = num_heads
-        head_dim = dim // num_heads
-        self.scale = qk_scale or head_dim**-0.5
-
-        self.q_proj = torch.nn.Linear(dim, dim, bias=qkv_bias)
-        self.k_proj = torch.nn.Linear(dim, dim, bias=qkv_bias)
-        self.v_proj = torch.nn.Linear(dim, dim, bias=qkv_bias)
-        self.mhattn = torch.nn.MultiheadAttention(dim, num_heads, batch_first=True)
-
-    def forward(self, x):
-        q = self.q_proj(x)
-        k = self.k_proj(x)
-        v = self.v_proj(x)
-        
-        attn, _ = self.mhattn(q, k, v)
-        return attn
-
 
 class MultiConcatWithAttention(IMultiQueryModel):
     
@@ -37,7 +16,7 @@ class MultiConcatWithAttention(IMultiQueryModel):
         self.feat_dim = 384
         self.n_query = n_query
         self.n_heads = n_heads
-        self.attn = Attention(dim=self.feat_dim, num_heads=self.n_heads)
+        self.attn = torch.nn.TransformerEncoderLayer(d_model=self.feat_dim, nhead=self.n_heads, batch_first=True)
 
         self.proj = torch.nn.Linear(in_features=self.feat_dim, out_features=1, bias=False)
         
