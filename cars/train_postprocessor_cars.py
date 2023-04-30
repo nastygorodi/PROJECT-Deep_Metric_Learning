@@ -16,7 +16,7 @@ POSTPROCESSORS_REGISTRY['multi_emb_freq'] = MultiEmbeddingsFreqPostprocessor
 PAIRWISE_MODELS_REGISTRY['multi_query_cat'] = MultiConcat
 PAIRWISE_MODELS_REGISTRY['multi_query_attn'] = MultiConcatWithAttention
 
-@hydra.main(config_path="configs", config_name="train_postprocessor_cars_multiple_emb.yaml")
+@hydra.main(config_path="configs", config_name="train_postprocessing_cars_multiple_emb.yaml")
 def main_hydra(cfg: DictConfig) -> None:
     pl_train_postprocessor(cfg)
 

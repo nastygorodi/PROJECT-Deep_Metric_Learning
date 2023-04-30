@@ -1,6 +1,6 @@
 postfix: "postprocessing"
 
-seed: 3407
+seed: 42
 precision: 16
 accelerator: gpu
 devices: 1
@@ -37,9 +37,9 @@ transforms_extraction:
 # TRAIN POSTPROCESSOR
 
 pairwise_model:
-  name: multi_query_attn
+  name: multi_query_cat
   args:
-    n_heads: 4
+    hidden_dim: 256
     n_query: ${n_queries}
 
 hard_pairs_mining: True
@@ -56,7 +56,7 @@ scheduling:
     name: cosine_annealing
     args:
       T_max: 1000
-      eta_min: 5e-6
+      eta_min: 1e-5
 
 sampler:
   name: balance
@@ -76,7 +76,7 @@ batch_size_inference: 128
 postprocessor:
   name: multiple_emb
   args:
-    top_n: 15
+    top_n: 5
     n_queries: ${n_queries}
     pairwise_model: ${pairwise_model}
     num_workers: ${num_workers}
