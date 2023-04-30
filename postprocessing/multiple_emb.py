@@ -53,6 +53,7 @@ class MultiEmbeddingsPostprocessor(IDistancesPostprocessor, ABC):
         self,
         top_n: int,
         n_queries: int,
+        q_inds_path,
         pairwise_model: IMultiQueryModel,
         num_workers: int,
         batch_size: int,
@@ -67,6 +68,8 @@ class MultiEmbeddingsPostprocessor(IDistancesPostprocessor, ABC):
 
         self.top_n = top_n
         self.n_queries = n_queries
+        with open(q_inds_path, 'rb') as f:
+            self.q_inds = torch.load(f)
         self.model = pairwise_model
         self.num_workers = num_workers
         self.batch_size = batch_size
@@ -78,7 +81,7 @@ class MultiEmbeddingsPostprocessor(IDistancesPostprocessor, ABC):
         self.embeddings_key = embeddings_key
         self.label_key = label_key
 
-    def process(self, distances: Tensor, queries: Any, galleries: Any, q_labels: Any) -> Tensor:
+    def process(self, distances: Tensor, queries: Any, galleries: Any) -> Tensor:
 
         n_queries = len(queries)
         n_galleries = len(galleries)
@@ -93,7 +96,7 @@ class MultiEmbeddingsPostprocessor(IDistancesPostprocessor, ABC):
         distances_upd, new_ii_top = self.inference(queries=queries, 
                                                    galleries=galleries, 
                                                    distances=torch.clone(distances), 
-                                                   top_n=top_n, q_labels=q_labels)
+                                                   top_n=top_n)
         new_ii_top = new_ii_top.to(ii_top.device).to(ii_top.dtype)
         distances_upd = distances_upd.to(distances.device).to(distances.dtype)
 
@@ -109,19 +112,9 @@ class MultiEmbeddingsPostprocessor(IDistancesPostprocessor, ABC):
 
         return distances
     
-    def inference(self, queries: Tensor, galleries: Tensor, distances: Tensor, top_n: int, q_labels: Tensor) -> Tensor:
-        n_queries = len(queries)
-        
-        indexes_ = torch.arange(q_labels.shape[0])
-        add_multi = self.n_queries - 1
-        def multi_query(ind):
-            label = q_labels[ind]
-            cur_possible_inds = indexes_[q_labels == label]
-            cur_possible_inds = cur_possible_inds[cur_possible_inds != ind]
-            inds = torch.randperm(len(cur_possible_inds))[:add_multi]
-            return torch.cat((torch.tensor([ind]), cur_possible_inds[inds])).view(1, -1)
-        
-        q_inds = torch.cat([multi_query(i) for i in range(len(q_labels))], dim=0)
+    def inference(self, queries: Tensor, galleries: Tensor, distances: Tensor, top_n: int) -> Tensor:
+        q_inds = self.q_inds
+        n_queries = q_inds.shape[0]
         
         distances[torch.arange(0, distances.shape[0]), q_inds.T] = torch.inf
         new_ii_top = torch.topk(distances, k=top_n, largest=False)[1]
@@ -146,8 +139,7 @@ class MultiEmbeddingsPostprocessor(IDistancesPostprocessor, ABC):
     def process_by_dict(self, distances: Tensor, data: Dict[str, Any]) -> Tensor:
         queries = data[self.embeddings_key][data[self.is_query_key]]
         galleries = data[self.embeddings_key][data[self.is_gallery_key]]
-        q_labels = data[self.label_key][data[self.is_query_key]]
-        return self.process(distances=distances, queries=queries, galleries=galleries, q_labels=q_labels)
+        return self.process(distances=distances, queries=queries, galleries=galleries)
 
     @property
     def needed_keys(self) -> List[str]:

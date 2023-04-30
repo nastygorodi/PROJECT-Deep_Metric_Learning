@@ -78,6 +78,7 @@ postprocessor:
   args:
     top_n: 5
     n_queries: ${n_queries}
+    q_inds_path: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/validation_q_indexes.pt
     pairwise_model: ${pairwise_model}
     num_workers: ${num_workers}
     batch_size: ${batch_size_inference}
