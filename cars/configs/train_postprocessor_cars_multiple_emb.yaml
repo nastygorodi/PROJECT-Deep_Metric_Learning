@@ -11,7 +11,7 @@ dataframe_name: df_no_bboxes.csv
 logs_folder: ${now:%Y-%m-%d_%H-%M-%S}_${postfix}
 
 num_workers: 20
-max_epochs: 300
+max_epochs: 1000
 valid_period: 5
 n_queries: 3
 
@@ -37,28 +37,26 @@ transforms_extraction:
 # TRAIN POSTPROCESSOR
 
 pairwise_model:
-  name: multi_query_cat
+  name: multi_query_attn
   args:
-    hidden_dim: 256
+    n_heads: 4
     n_query: ${n_queries}
 
 hard_pairs_mining: True
 
 optimizer:
-  name: adam
+  name: adamw
   args:
-    lr: 1e-3
+    lr: 1e-4
 
-freeze_n_epochs: 70
 scheduling:
   scheduler_interval: epoch
   scheduler_frequency: 1
   scheduler:
-    name: multi_step
+    name: cosine_annealing
     args:
-      gamma: 1e-2
-      milestones:
-        - ${freeze_n_epochs}
+      T_max: 1000
+      eta_min: 1e-6
 
 sampler:
   name: balance
