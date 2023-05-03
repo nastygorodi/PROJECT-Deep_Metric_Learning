@@ -121,9 +121,12 @@ def pl_train_postprocessor(cfg: DictConfig) -> None:
     is_ddp = check_is_config_for_ddp(trainer_engine_params)
 
     loader_train, loader_val = get_loaders_with_embeddings(cfg)
+    
+    device = tdevice("cuda:0") if parse_engine_params_from_config(cfg)["accelerator"] == "gpu" else tdevice("cpu")
 
     postprocessor = None if not cfg.get("postprocessor", None) else get_postprocessor_by_cfg(cfg["postprocessor"])
     assert isinstance(postprocessor.model, IMultiQueryModel), f"You model must be a child of {IMultiQueryModel.__name__}"
+    postprocessor.model = postprocessor.model.to(device)
 
     criterion = torch.nn.BCEWithLogitsLoss()
     miner = MultiQueryMiner_naive(n_queries=cfg["n_queries"])

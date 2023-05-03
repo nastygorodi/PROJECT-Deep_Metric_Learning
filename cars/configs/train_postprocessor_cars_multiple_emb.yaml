@@ -39,7 +39,7 @@ transforms_extraction:
 pairwise_model:
   name: multi_query_attn
   args:
-    n_heads: 4
+    n_heads: 8
     n_query: ${n_queries}
 
 hard_pairs_mining: True
