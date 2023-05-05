@@ -47,7 +47,7 @@ hard_pairs_mining: True
 optimizer:
   name: adamw
   args:
-    lr: 1e-4
+    lr: 1e-3
 
 scheduling:
   scheduler_interval: epoch
