@@ -17,7 +17,7 @@ class MultiQueryWithAttention(IMultiQueryModel):
         self.n_query = n_query
         self.n_heads = n_heads
         self.attn = torch.nn.MultiheadAttention(embed_dim=self.feat_dim * (self.n_query), num_heads=self.n_heads, batch_first=True)
-
+        self.relu = torch.nn.ReLU()
         self.proj = torch.nn.Linear(in_features=self.feat_dim * (self.n_query), out_features=1, bias=False)
         
         if weights:
@@ -33,6 +33,7 @@ class MultiQueryWithAttention(IMultiQueryModel):
         x2_ = x2.repeat_interleave(self.n_query, dim=0).view(x2.shape[0], -1)
         x1_ = x1.view(x1.shape[0], -1)
         res_c, _ = self.attn(x2_, x2_, x1_)
+        res_c = self.relu(res_c)
         res_out = self.proj(res_c)
         return res_out
 
