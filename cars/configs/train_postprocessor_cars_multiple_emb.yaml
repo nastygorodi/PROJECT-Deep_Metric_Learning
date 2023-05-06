@@ -39,7 +39,7 @@ transforms_extraction:
 pairwise_model:
   name: multi_query_attn
   args:
-    n_heads: 12
+    n_heads: 8
     n_query: ${n_queries}
 
 hard_pairs_mining: True
@@ -47,7 +47,7 @@ hard_pairs_mining: True
 optimizer:
   name: adamw
   args:
-    lr: 1e-4
+    lr: 5e-5
 
 scheduling:
   scheduler_interval: epoch
@@ -56,7 +56,7 @@ scheduling:
     name: cosine_annealing
     args:
       T_max: 1000
-      eta_min: 1e-6
+      eta_min: 1e-5
 
 sampler:
   name: balance

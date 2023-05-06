@@ -18,7 +18,7 @@ PAIRWISE_MODELS_REGISTRY['multi_query_cat'] = MultiConcat
 PAIRWISE_MODELS_REGISTRY['multi_query_attn'] = MultiConcatWithAttention
 PAIRWISE_MODELS_REGISTRY['multi_query_attn_v2'] = MultiQueryWithAttention
 
-@hydra.main(config_path="configs", config_name="train_postprocessor_cars_attn.yaml")
+@hydra.main(config_path="configs", config_name="train_postprocessor_cars_multiple_emb.yaml")
 def main_hydra(cfg: DictConfig) -> None:
     pl_train_postprocessor(cfg)
 
