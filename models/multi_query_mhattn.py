@@ -16,9 +16,10 @@ class MultiQueryWithAttention(IMultiQueryModel):
         self.feat_dim = 384
         self.n_query = n_query
         self.n_heads = n_heads
-        self.attn = torch.nn.MultiheadAttention(embed_dim=self.feat_dim * (self.n_query), num_heads=self.n_heads, batch_first=True)
-        self.relu = torch.nn.ReLU()
-        self.proj = torch.nn.Linear(in_features=self.feat_dim * (self.n_query), out_features=1, bias=False)
+        self.layer = torch.nn.TransformerEncoderLayer(d_model=self.feat_dim, nhead=self.n_heads, batch_first=True)
+        self.attn = torch.nn.TransformerEncoder(self.layer, num_layers=4)
+        #self.relu = torch.nn.ReLU()
+        self.proj = torch.nn.Linear(in_features=self.feat_dim, out_features=1)
         
         if weights:
 
@@ -30,11 +31,10 @@ class MultiQueryWithAttention(IMultiQueryModel):
         
 
     def forward(self, x1: Tensor, x2: Tensor) -> Tensor:
-        x2_ = x2.repeat_interleave(self.n_query, dim=0).view(x2.shape[0], -1)
-        x1_ = x1.view(x1.shape[0], -1)
-        res_c, _ = self.attn(x2_, x2_, x1_)
-        res_c = self.relu(res_c)
-        res_out = self.proj(res_c)
+        x2_shape = x2.shape
+        res = torch.cat([x1.view(x1.shape[0], -1), x2], dim=-1).view(x2_shape[0], (self.n_query + 1), -1) # B x n x emb_dim
+        res_c = self.attn(res)
+        res_out = self.proj(res_c[:, -1])
         return res_out
 
     def predict(self, x1: Tensor, x2: Tensor) -> Tensor:
