@@ -37,7 +37,7 @@ transforms_extraction:
 # TRAIN POSTPROCESSOR
 
 pairwise_model:
-  name: multi_query_attn_v2
+  name: multi_query_attn_v3
   args:
     n_heads: 8
     n_query: ${n_queries}
@@ -47,7 +47,7 @@ hard_pairs_mining: True
 optimizer:
   name: adamw
   args:
-    lr: 5e-4
+    lr: 1e-4
 
 scheduling:
   scheduler_interval: epoch
@@ -56,7 +56,7 @@ scheduling:
     name: cosine_annealing
     args:
       T_max: 1000
-      eta_min: 1e-5
+      eta_min: 1e-6
 
 sampler:
   name: balance
