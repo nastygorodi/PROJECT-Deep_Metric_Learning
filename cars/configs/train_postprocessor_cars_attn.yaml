@@ -47,7 +47,7 @@ hard_pairs_mining: True
 optimizer:
   name: adamw
   args:
-    lr: 7e-3
+    lr: 7e-4
 
 freeze_n_epochs: 70
 scheduling:
