@@ -20,6 +20,7 @@ n_queries: 3
 embeddings_cache_dir: ${dataset_root}
 
 extractor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-04-16_01-19-44_metric_learning_cars/checkpoints/best.ckpt
+postprocessor_weights: /home/aagorodilova_2/PROJECT-Deep_Metric_Learning/logs/CARS196/2023-05-09_20-34-41_postprocessing/checkpoints/best.ckpt
 
 extractor:
   name: vit
@@ -41,24 +42,14 @@ pairwise_model:
   args:
     n_heads: 8
     n_query: ${n_queries}
+    weights: ${postprocessor_weights}
 
 hard_pairs_mining: True
 
 optimizer:
   name: adamw
   args:
-    lr: 7e-4
-
-freeze_n_epochs: 70
-scheduling:
-  scheduler_interval: epoch
-  scheduler_frequency: 1
-  scheduler:
-    name: multi_step
-    args:
-      gamma: 15e-3
-      milestones:
-        - ${freeze_n_epochs}
+    lr: 1e-5
 
 sampler:
   name: balance
